@@ -31,7 +31,7 @@ Environmental consciousness: Sustainable living and environmental stewardship.
 Rest and relaxation: Ensuring adequate downtime and stress management.
 
 Personal space and environment: Creating a comfortable and organized living space.
-`
+`;
 const schema = a.schema({
   DailyGoal: a
     .model({

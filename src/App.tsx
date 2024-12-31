@@ -28,9 +28,9 @@ function App() {
   const { tokens } = useTheme();
   const [usedSuggestions, setUsedSuggestions] = useState<string[]>([]);
   const [suggestion, setSuggestion] = useState<string>();
-    const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [image, setImage] = useState<string>();
-  const [goalType, setGoalType] = useState<string>('');
+  const [goalType, setGoalType] = useState<string>("");
 
   // Interesting to think about: https://github.com/johnpc/goals/blob/master/goals/ViewController.swift#L20-L35
   const goalTypes = [
@@ -47,13 +47,11 @@ function App() {
     "Cultural awareness and diversity",
     "Environmental consciousness",
     "Rest and relaxation",
-    "Personal space and environment"
+    "Personal space and environment",
   ];
   useEffect(() => {
     const fetchSuggestions = async () => {
-      const { data: response } = await client.models.DailyGoal.list(
-        {}
-      );
+      const { data: response } = await client.models.DailyGoal.list({});
       const suggestions = response?.map(
         (item) => item.dailyGoalSuggestion
       ) as string[];
@@ -76,13 +74,11 @@ function App() {
 
   const generateGoal = async () => {
     setLoading(true);
-    const { data: response } =
-      await client.generations.generateDailyGoal({
-        goalType,
-        usedSuggestions,
-      });
-    const dailyGoalSuggestion =
-      response?.dailyGoalSuggestion as string;
+    const { data: response } = await client.generations.generateDailyGoal({
+      goalType,
+      usedSuggestions,
+    });
+    const dailyGoalSuggestion = response?.dailyGoalSuggestion as string;
     await client.models.DailyGoal.create({
       dailyGoalSuggestion,
     });
@@ -122,7 +118,9 @@ function App() {
             value={goalType}
             onChange={(e) => setGoalType(e.target.value)}
           >
-            <option value="" disabled>Select a goal type</option>
+            <option value="" disabled>
+              Select a goal type
+            </option>
             {goalTypes.map((type) => (
               <option key={type} value={type}>
                 {type}
