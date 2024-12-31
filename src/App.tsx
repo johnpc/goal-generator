@@ -32,6 +32,7 @@ function App() {
   const [image, setImage] = useState<string>();
   const [goalType, setGoalType] = useState<string>('');
 
+  // Interesting to think about: https://github.com/johnpc/goals/blob/master/goals/ViewController.swift#L20-L35
   const goalTypes = [
     "Professional development",
     "Personal relationships",
