@@ -1,0 +1,14 @@
+.gitignore
+.prettierignore
+ios/
+*.svg
+*.png
+*.webp
+*.avif
+.env*
+.husky
+apple-app-site-association
+.amplify/
+dist/
+*.tsbuildinfo
+amplify_outputs.json
