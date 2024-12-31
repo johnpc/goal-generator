@@ -14,7 +14,7 @@ import {
   Card,
   Text,
   Flex,
-  TextField,
+  SelectField,
 } from "@aws-amplify/ui-react";
 const client = generateClient<Schema>();
 
@@ -28,20 +28,33 @@ function App() {
   const { tokens } = useTheme();
   const [usedSuggestions, setUsedSuggestions] = useState<string[]>([]);
   const [suggestion, setSuggestion] = useState<string>();
-  const [personName, setPersonName] = useState(() => {
-    const savedName = localStorage.getItem('personName');
-    return savedName ? JSON.parse(savedName) : '';
-  });
     const [loading, setLoading] = useState<boolean>(false);
   const [image, setImage] = useState<string>();
+  const [goalType, setGoalType] = useState<string>('');
 
+  const goalTypes = [
+    "Professional development",
+    "Personal relationships",
+    "Health and wellness",
+    "Financial management",
+    "Personal growth and self-improvement",
+    "Spiritual or philosophical growth",
+    "Emotional intelligence",
+    "Community involvement",
+    "Creativity and self-expression",
+    "Time management and productivity",
+    "Cultural awareness and diversity",
+    "Environmental consciousness",
+    "Rest and relaxation",
+    "Personal space and environment"
+  ];
   useEffect(() => {
     const fetchSuggestions = async () => {
-      const { data: response } = await client.models.RandomActOfKindness.list(
+      const { data: response } = await client.models.DailyGoal.list(
         {}
       );
       const suggestions = response?.map(
-        (item) => item.randomActOfKindnessSuggestion
+        (item) => item.dailyGoalSuggestion
       ) as string[];
       setUsedSuggestions(suggestions);
     };
@@ -49,7 +62,7 @@ function App() {
     const fetchImage = async () => {
       const { data: image, errors } = await client.queries.generateImage({
         prompt:
-          "Create a sunny floral image that evokes feelings of kindness and joy",
+          "Create an intense but beautiful image that evokes feelings of productivity",
       });
       if (errors && errors?.length) {
         console.log({ errors });
@@ -60,28 +73,22 @@ function App() {
     fetchSuggestions();
   }, []);
 
-  const generateRandomActOfKindness = async () => {
+  const generateGoal = async () => {
     setLoading(true);
-    console.log({personName});
     const { data: response } =
-      await client.generations.generateRandomActOfKindness({
-        personName,
+      await client.generations.generateDailyGoal({
+        goalType,
         usedSuggestions,
       });
-    const randomActOfKindnessSuggestion =
-      response?.randomActOfKindnessSuggestion as string;
-    await client.models.RandomActOfKindness.create({
-      randomActOfKindnessSuggestion,
+    const dailyGoalSuggestion =
+      response?.dailyGoalSuggestion as string;
+    await client.models.DailyGoal.create({
+      dailyGoalSuggestion,
     });
-    setUsedSuggestions([...usedSuggestions, randomActOfKindnessSuggestion]);
-    setSuggestion(randomActOfKindnessSuggestion);
+    setUsedSuggestions([...usedSuggestions, dailyGoalSuggestion]);
+    setSuggestion(dailyGoalSuggestion);
     setLoading(false);
   };
-
-  const handleSetPersonName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPersonName(event.target.value);
-    localStorage.setItem('personName', JSON.stringify(event.target.value));
-  }
 
   return (
     <ThemeProvider theme={theme} colorMode={"dark"}>
@@ -99,30 +106,28 @@ function App() {
           borderRadius={tokens.radii.medium}
         >
           <Heading color={"burlywood"} level={3}>
-            Random Acts Of Kindness
+            Goal Generator
           </Heading>
         </Card>
         <Card
-          textAlign={"center"}
+          textAlign="center"
           margin={tokens.space.small}
           borderRadius={tokens.radii.medium}
+          padding={tokens.space.medium}
         >
-          <Flex direction="column" gap={tokens.space.small}>
-            <TextField
-              label={
-                <Text fontSize={tokens.fontSizes.medium} color={"burlywood"}>
-                  Who would you like to generate an act of kindness for?
-                </Text>
-              }
-              style={{
-                color: "burlywood",
-              }}
-              placeholder="Enter a name"
-              value={personName}
-              onChange={handleSetPersonName}
-              size="large"
-            />
-          </Flex>
+          <SelectField
+            label="Choose a Goal Type"
+            labelHidden={false}
+            value={goalType}
+            onChange={(e) => setGoalType(e.target.value)}
+          >
+            <option value="" disabled>Select a goal type</option>
+            {goalTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </SelectField>
         </Card>
         <Flex
           flex="1"
@@ -136,7 +141,7 @@ function App() {
             <Card
               textAlign={"center"}
               margin={tokens.space.small}
-              onClick={() => generateRandomActOfKindness()}
+              onClick={() => generateGoal()}
               borderRadius={tokens.radii.medium}
             >
               {loading ? (
@@ -153,11 +158,11 @@ function App() {
         <Card
           textAlign={"center"}
           margin={tokens.space.small}
-          onClick={() => generateRandomActOfKindness()}
+          onClick={() => generateGoal()}
           borderRadius={tokens.radii.medium}
         >
           <Text fontSize={tokens.fontSizes.medium} color={"burlywood"}>
-            Generate a Random Act Of Kindness
+            Generate a Goal
           </Text>
         </Card>
       </Flex>
